@@ -1,0 +1,16 @@
+{
+  "name": "lab5-t2-ai-study-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Prototype T2 gọi Gemini thật qua Interactions API",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "start:no-key": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
+
