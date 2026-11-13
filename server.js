@@ -74,12 +74,13 @@ DỮ LIỆU DUY NHẤT ĐƯỢC DÙNG
 LUẬT SẢN PHẨM
 1. Không đưa, tính hộ hoặc xác nhận đáp số Bài tập 3 khi bài đang mở. Chỉ đưa một gợi ý bước đầu.
 2. Không đăng hoặc soạn lời giải Bài tập 3 lên FAQ khi bài đang mở. Chọn BLOCK_FAQ.
-3. Mọi khẳng định kiến thức phải có đúng mã nguồn trong sources.
-4. Nếu nguồn không có, nói rõ không tìm thấy. Không bịa slide, hạn nộp hay nội dung buổi chưa mở.
-5. Nếu gặp câu đáng ngờ ở §3.3, chỉ rõ cần giảng viên kiểm tra và đề nghị chuyển TA.
-6. Không nói đã chuyển TA. Chỉ nói học viên có thể chọn nút chuyển TA.
-7. Không nhận xét năng lực học viên.
-8. Trả lời ngắn gọn, tự nhiên và hữu ích bằng tiếng Việt.
+3. Không viết hộ lời giải, phần nhận xét, bài làm hoặc nội dung hoàn chỉnh có thể dùng trực tiếp để nộp cho Bài tập 3 đang mở. Chỉ hướng dẫn cách người học tự làm và chọn HINT_ONLY.
+4. Mọi khẳng định kiến thức phải có đúng mã nguồn trong sources.
+5. Nếu nguồn không có, nói rõ không tìm thấy. Không bịa slide, hạn nộp hay nội dung buổi chưa mở.
+6. Nếu gặp câu đáng ngờ ở §3.3, chỉ rõ cần giảng viên kiểm tra và đề nghị chuyển TA.
+7. Không nói đã chuyển TA. Chỉ nói học viên có thể chọn nút chuyển TA.
+8. Không nhận xét năng lực học viên.
+9. Trả lời ngắn gọn, tự nhiên và hữu ích bằng tiếng Việt.
 `;
 
 function sendJson(response, status, body) {
@@ -112,8 +113,15 @@ function questionRisk(question) {
   const answerRequest = ["đáp số", "đáp án", "giải hộ", "giải bài"].some(
     (term) => normalized.includes(term),
   );
+  const submissionRequest =
+    ["viết", "làm hộ", "soạn"].some((term) => normalized.includes(term)) &&
+    ["nhận xét", "lời giải", "bài làm", "nội dung"].some(
+      (term) => normalized.includes(term),
+    ) &&
+    ["nộp", "gửi bài"].some((term) => normalized.includes(term));
 
   if (faqRequest) return "OPEN_ASSIGNMENT_FAQ";
+  if (submissionRequest) return "OPEN_ASSIGNMENT_SUBMISSION";
   if (answerRequest) return "OPEN_ASSIGNMENT_ANSWER";
   return "NORMAL";
 }
@@ -126,6 +134,17 @@ function safeFallback(risk) {
       sources: ["Trang khóa học"],
       confidence: "high",
       reason: "Đăng lời giải lúc bài đang mở sẽ làm lộ đáp án cho cả lớp.",
+      policyAdjusted: true,
+    };
+  }
+
+  if (risk === "OPEN_ASSIGNMENT_SUBMISSION") {
+    return {
+      action: "HINT_ONLY",
+      message: "Bài tập 3 đang mở nên mình không thể viết hộ nội dung để bạn nộp. Mình có thể hướng dẫn bạn tự viết phần nhận xét dựa trên kết quả bạn đã tính.",
+      sources: ["Trang khóa học"],
+      confidence: "high",
+      reason: "Nội dung hoàn chỉnh dùng để nộp sẽ làm thay phần việc học viên cần tự thực hiện.",
       policyAdjusted: true,
     };
   }
@@ -170,7 +189,7 @@ function validateDecision(rawDecision, question) {
   }
 
   if (
-    risk === "OPEN_ASSIGNMENT_ANSWER" &&
+    new Set(["OPEN_ASSIGNMENT_ANSWER", "OPEN_ASSIGNMENT_SUBMISSION"]).has(risk) &&
     (!new Set(["HINT_ONLY", "TRANSFER_TA"]).has(decision.action) || containsKnownAnswer)
   ) {
     return safeFallback(risk);

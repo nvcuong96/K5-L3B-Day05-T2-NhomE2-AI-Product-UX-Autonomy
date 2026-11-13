@@ -6,7 +6,7 @@
 |---|---|---|
 | Nguyễn Văn Cường | 2A202603750 | Viết kịch bản rủi ro §2, phân tích khi AI sai §3 (kịch bản #8), phiếu mức tự chủ §4 |
 | Đoàn Công Hải | 2A202603779 | Dựng prototype §5, phân tích khi AI sai §3 (kịch bản #5), tiêu chí §6 |
-| Nguyễn Văn Hiếu | 2A202603746 | Bảng mức tự chủ §4, thử mức trên 3 kịch bản, chuẩn bị demo §7 |
+| Nguyễn Văn Hiếu | 2A202603746 | Hoàn thiện mức tự chủ §4 và thử trên 3 kịch bản; tích hợp Gemini live, kiểm thử bonus và hard tests; bổ sung ảnh minh chứng prototype §5; chuẩn bị kịch bản demo và hoàn thiện §7; rà soát yêu cầu bài nộp |
 
 > Điền các phần trong `[ngoặc vuông]`; xóa hướng dẫn sau khi hoàn tất. Mỗi quyết định cần nêu phương án đã cân nhắc, phương án được chọn, lý do chọn và lý do loại phương án khác. Bằng chứng cần trỏ tới tool, mục dữ liệu hoặc vị trí trên prototype cụ thể. Tham khảo `02-guide.md` và `04-rubric.md`.
 
@@ -81,7 +81,7 @@ Viết ít nhất 8 kịch bản; có ít nhất một kịch bản thuộc mỗ
 | Tool | Mức của nhóm | Nếu cần duyệt: ai, thấy gì, quá hạn thì sao? | Cost-of-error: ai chịu gì, có đảo lại được không, chờ người mất gì? | Phương án khác đã cân nhắc và lý do loại |
 |---|---|---|---|---|
 | `tra_cuu_tai_lieu` | Tự làm | Không cần duyệt; chỉ tìm và trích mục tài liệu, không tự khẳng định nguồn ngoài tài liệu là đúng | Học viên có thể học sai nếu AI trích nhầm; thao tác chỉ đọc nên dễ kiểm lại. Nếu không tìm thấy nguồn hoặc gặp câu đáng ngờ ở §3.3, nói rõ giới hạn và gợi ý hỏi giảng viên, không bịa | Cấm tra cứu sẽ làm mất chức năng học kèm; tự trả lời không dẫn nguồn còn khó kiểm chứng hơn |
-| `goi_y_bai_tap` | Tự làm, có giới hạn | Không cần duyệt cho một gợi ý bước đầu; nếu không xác định được bài đang mở hay đã hết hạn thì không gửi đáp án và hỏi/chuyển TA | Học viên có thể chép gợi ý quá sâu; một khi thấy đáp án không thể thu hồi. Kiểm tra trạng thái trước khi gọi tool; bài đang mở chỉ cho gợi ý đầu tiên, tuyệt đối không đưa hay xác nhận đáp số | Duyệt TA mọi gợi ý sẽ làm người học buổi tối phải chờ; cho AI giải tự do tạo rủi ro ở #5 |
+| `goi_y_bai_tap` | Tự làm, có giới hạn | Không cần duyệt cho một gợi ý bước đầu; nếu không xác định được bài đang mở hay đã hết hạn thì không gửi đáp án và hỏi/chuyển TA | Học viên có thể chép gợi ý quá sâu; một khi thấy đáp án hoặc nội dung hoàn chỉnh để nộp thì không thể thu hồi. Kiểm tra trạng thái trước khi gọi tool; bài đang mở chỉ cho gợi ý đầu tiên, tuyệt đối không đưa/xác nhận đáp số hoặc viết hộ lời giải, nhận xét và nội dung có thể dùng trực tiếp để nộp | Duyệt TA mọi gợi ý sẽ làm người học buổi tối phải chờ; cho AI giải hoặc viết hộ tự do tạo rủi ro ở #5 và ca lạ tại §7 |
 | `chuyen_TA` | Tự làm khi học viên yêu cầu | Không cần duyệt thêm; học viên thấy nội dung câu hỏi và giờ TA dự kiến trước khi xác nhận chuyển. Ngoài 08:00–22:00 thì báo lượt phản hồi tiếp theo, không hứa trả lời ngay | Chuyển nhầm câu hỏi gây phiền và chậm; có thể hủy/chỉnh trước khi gửi. Chờ TA có chi phí, nhất là buổi tối, nên trợ lý vẫn đưa gợi ý an toàn trong phạm vi trước | Tự chuyển mọi câu hỏi làm TA quá tải; không có đường chuyển thì học viên tưởng đã được trợ giúp dù đang mắc kẹt |
 | `dang_FAQ` | Tự làm khi `kiem_duyet_FAQ` đạt; nếu bị gắn cờ thì chờ TA | TA chỉ xem bản nháp bị gắn cờ hoặc kiểm duyệt không chắc; thấy nội dung, nguồn và lý do gắn cờ. Nếu TA chưa xem thì bản nháp không được đăng | Sai FAQ ảnh hưởng cả lớp; có thể gỡ nhưng không thu hồi người đã đọc (#8). Chờ xử lý bản nháp bị gắn cờ làm FAQ chậm, nhưng an toàn hơn đăng nhầm đáp án | Tự đăng không kiểm duyệt nhanh hơn nhưng có thể làm lộ đáp án; bắt TA duyệt mọi FAQ thì chậm cả nội dung an toàn |
 | `kiem_duyet_FAQ` (bước kiểm duyệt tự động) | Tự làm, fail-closed | Không cần duyệt cho nội dung đạt. Kiểm tra từ/cụm từ không được phép, nguồn trích và liệu nội dung có chứa hay diễn đạt lại đáp án bài đang mở không; nếu thiếu dữ liệu hoặc không chắc thì gắn cờ để TA xem, không cho đăng | Bỏ sót đáp án có thể làm cả lớp thấy nội dung khó thu hồi; chặn nhầm chỉ làm FAQ chậm. Không chỉ dò từ khóa: phải đối chiếu trạng thái và nội dung bài tập, còn trường hợp không chắc thì giữ bản nháp | Dò từ cấm đơn thuần dễ lọt đáp án diễn đạt bằng số/paraphrase; duyệt tay mọi bài giảm lọt lỗi nhưng gây chờ không cần thiết với bài an toàn |
@@ -111,7 +111,7 @@ Chỗ lệch và cách chốt: Cường lo kiểm duyệt tự động lọt l�
 
 ## §5. Prototype (chặng 5)
 
-- **Link hoặc đường dẫn file:** `prototype/index.html` — mở bằng trình duyệt.
+- **Link hoặc đường dẫn file:** Chạy `npm start` tại thư mục gốc, sau đó mở `http://localhost:3000` để dùng Gemini live; không mở trực tiếp `prototype/index.html` nếu muốn gọi backend.
 - **Công cụ dựng:** HTML + CSS + JavaScript ở giao diện; Node.js 22 ở backend; Gemini Interactions API mới qua REST.
 - **Phần mock:** Dữ liệu khóa học, trạng thái bài tập và hàng đợi TA vẫn là fixture của track. Nếu backend hoặc key chưa sẵn sàng, giao diện tự chuyển về các phản hồi mô phỏng có gắn nhãn rõ ràng.
 - **Có lời gọi AI thật không:** Có. `server.js` gửi câu hỏi đến `POST /v1beta/interactions`, yêu cầu JSON theo schema hành động, rồi kiểm tra lại chính sách ở backend trước khi trả kết quả cho giao diện. API key chỉ đọc từ `.env`, không đưa vào HTML. Đã chạy live thành công bằng `gemini-3.5-flash-lite` trên project Free: câu hỏi kiến thức trả `ANSWER_WITH_SOURCE`, xin đáp số bài đang mở trả `HINT_ONLY`, yêu cầu đăng lời giải lên FAQ trả `BLOCK_FAQ`; cả hai ca nhạy cảm đều không lộ đáp số. Chi tiết ở `prototype/live-test-results.json`.
@@ -131,6 +131,12 @@ Chỗ lệch và cách chốt: Cường lo kiểm duyệt tự động lọt l�
 
 > Bấm nút "① Chú thích" trên prototype để bật/tắt các vòng tròn đánh số tương ứng với bảng trên.
 
+### Ảnh minh chứng prototype
+
+![Màn hình học viên — Gemini chỉ gợi ý bước đầu, không lộ đáp số bài đang mở](prototype/01-hoc-vien-bai-dang-mo.png)
+
+![Màn hình TA — bản nháp FAQ bị gắn cờ và chờ kiểm duyệt](prototype/02-ta-kiem-duyet-faq.png)
+
 **Độ chắc/bằng chứng và điều khiển mức tự chủ:**
 
 - **Cách đang dùng:** Độ chắc thể hiện qua (a) badge trạng thái bài tập ở đầu chat + sidebar, (b) trích nguồn §mục cụ thể trong mỗi gợi ý, (c) lý do từ chối nêu rõ trạng thái bài và hạn nộp. Điều khiển mức tự chủ thể hiện qua: hành động tự làm (tra cứu, gợi ý bước đầu) hiện ngay; hành động cần duyệt (đăng FAQ bị gắn cờ) giữ bản nháp cho TA; hành động cấm (đưa đáp số bài đang mở) không có nút, chỉ có gợi ý bước đầu; đường chuyển người (nút "Chuyển TA") luôn sẵn sàng.
@@ -148,8 +154,6 @@ Viết ba tiêu chí Pass/Fail kiểm tra được; nêu kết quả trên hai k
 
 ## §7. Demo
 
-> Phần này điền sau khi demo xong. Ghi lại ca lạ nhận được và phản hồi của nhóm.
-
-- **Ca lạ nhóm nhận được:** [Điền sau demo].
-- **Prototype đã làm gì:** [Điền sau demo].
-- **Nhóm có đổi ý sau ca này không:** [Điền sau demo].
+- **Ca lạ nhóm nhận được:** Học viên nhờ trợ lý viết phần nhận xét cho Bài tập 3 đang mở để nộp.
+- **Prototype đã làm gì:** Trợ lý không viết hộ nội dung có thể dùng trực tiếp để nộp bài; chỉ hướng dẫn học viên tự nhận xét, giải thích giới hạn và cung cấp đường chuyển TA.
+- **Nhóm có đổi ý sau ca này không:** Có. Nhóm mở rộng quy tắc bảo vệ bài đang mở: không chỉ chặn đáp số mà còn chặn việc viết hộ lời giải, nhận xét hoặc nội dung hoàn chỉnh có thể dùng để nộp.
