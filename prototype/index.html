@@ -20,6 +20,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f
 .btn-annot.on{background:var(--blue);color:#fff}
 .btn-reset{border:1px solid #d1d5db;background:#fff;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;color:var(--gray)}
 .btn-reset:hover{background:var(--gray-light)}
+.live-status{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;background:var(--gray-light);color:var(--gray)}
+.live-status.ready{background:var(--green-light);color:var(--green)}
+.live-status.warn{background:var(--yellow-light);color:#92400e}
+.live-meta{margin-top:10px;padding-top:8px;border-top:1px dashed #d1d5db;color:var(--gray);font-size:11px;display:flex;gap:10px;flex-wrap:wrap}
 
 /* LAYOUT */
 .main{display:flex;height:calc(100vh - 53px)}
@@ -119,6 +123,7 @@ body.show-ann .legend{display:block}
 <div class="header">
   <div class="logo">📚 Trợ lý học bài</div>
   <div class="course">Nhập môn Phân tích Dữ liệu · Buổi 3</div>
+  <span class="live-status" id="aiMode">● Đang kiểm tra Gemini…</span>
   <div class="view-tabs">
     <button class="active" onclick="switchView('student')">👤 Học viên</button>
     <button onclick="switchView('ta')">🎓 Màn hình TA</button>
@@ -399,6 +404,124 @@ function matchResponse(text) {
 const chatBody = document.getElementById('chatBody');
 let busy = false;
 
+const ACTION_UI = {
+  ANSWER_WITH_SOURCE: { label: '✓ Trả lời có nguồn', className: 'ok' },
+  HINT_ONLY: { label: '⚠️ Chỉ gợi ý bước đầu', className: 'warn' },
+  BLOCK_FAQ: { label: '🚫 Không thể đăng FAQ', className: 'block' },
+  ASK_CLARIFY: { label: '❓ Cần hỏi lại', className: 'warn' },
+  TRANSFER_TA: { label: '↗ Cần TA kiểm tra', className: 'warn' },
+};
+
+async function checkAIStatus() {
+  const badge = document.getElementById('aiMode');
+  try {
+    const response = await fetch('/api/health', { cache: 'no-store' });
+    const status = await response.json();
+    if (response.ok && status.available) {
+      badge.className = 'live-status ready';
+      badge.textContent = `● Gemini live · ${status.model}`;
+      return;
+    }
+    if (response.ok && status.status === 'billing_required') {
+      badge.className = 'live-status warn';
+      badge.textContent = '● Gemini cần bật billing';
+      return;
+    }
+    if (response.ok && status.status === 'overloaded') {
+      badge.className = 'live-status warn';
+      badge.textContent = '● Gemini tạm quá tải';
+      return;
+    }
+    if (response.ok && status.configured) {
+      badge.className = 'live-status';
+      badge.textContent = '● Gemini đã cấu hình · chờ kiểm tra';
+      return;
+    }
+    throw new Error('Gemini chưa được cấu hình');
+  } catch {
+    badge.className = 'live-status warn';
+    badge.textContent = '● Chế độ mô phỏng';
+  }
+}
+
+async function requestAI(question) {
+  const response = await fetch('/api/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question }),
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || result.error || 'Gemini request failed');
+  return result;
+}
+
+function addLiveAI(result) {
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai';
+
+  const ui = ACTION_UI[result.action] || ACTION_UI.TRANSFER_TA;
+  const badge = document.createElement('div');
+  badge.className = `ai-badge ${ui.className}`;
+  badge.textContent = `✨ Gemini live · ${ui.label}`;
+  div.appendChild(badge);
+
+  const message = document.createElement('p');
+  message.textContent = result.message;
+  div.appendChild(message);
+
+  if (result.reason) {
+    const reason = document.createElement('p');
+    reason.style.cssText = 'margin-top:8px;color:var(--gray);font-size:13px';
+    reason.textContent = `Vì sao: ${result.reason}`;
+    div.appendChild(reason);
+  }
+
+  if (result.action === 'BLOCK_FAQ') {
+    const draft = document.createElement('div');
+    draft.className = 'ai-draft';
+    const draftTitle = document.createElement('div');
+    draftTitle.className = 'ai-draft-header';
+    draftTitle.textContent = '🚩 Nội dung chưa được đăng — cần TA xem';
+    draft.appendChild(draftTitle);
+    const draftText = document.createElement('p');
+    draftText.textContent = 'Hệ thống giữ yêu cầu ở trạng thái chờ, không công khai lời giải khi bài tập đang mở.';
+    draft.appendChild(draftText);
+    div.appendChild(draft);
+  }
+
+  const sources = document.createElement('div');
+  sources.className = 'ai-source';
+  sources.textContent = result.sources?.length
+    ? `📎 Nguồn: ${result.sources.join(', ')}`
+    : '📎 Chưa có nguồn phù hợp trong tài liệu';
+  div.appendChild(sources);
+
+  const meta = document.createElement('div');
+  meta.className = 'live-meta';
+  const adjusted = result.policyAdjusted ? ' · đã áp dụng chốt an toàn' : '';
+  meta.textContent = `Interaction ${result.requestId.slice(0, 8)} · ${result.model} · ${result.latencyMs} ms${adjusted}`;
+  div.appendChild(meta);
+
+  const actions = document.createElement('div');
+  actions.className = 'ai-actions';
+  if (result.action === 'BLOCK_FAQ') {
+    const taViewButton = document.createElement('button');
+    taViewButton.textContent = '📋 Xem màn hình TA';
+    taViewButton.addEventListener('click', () => switchView('ta'));
+    actions.appendChild(taViewButton);
+  }
+  const transferButton = document.createElement('button');
+  transferButton.className = 'primary';
+  transferButton.textContent = '↗ Chuyển TA';
+  transferButton.addEventListener('click', showOverlay);
+  actions.appendChild(transferButton);
+  div.appendChild(actions);
+
+  chatBody.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return div;
+}
+
 function sendFromInput() {
   const inp = document.getElementById('chatInput');
   const text = inp.value.trim();
@@ -412,29 +535,28 @@ async function sendMessage(text) {
   busy = true;
   document.getElementById('btnSend').disabled = true;
 
-  // 1. Show user message
   addMsg('user', text);
-
-  // 2. Find response
-  const key = matchResponse(text);
-  const resp = RESPONSES[key];
-
-  // 3. Show typing indicator
   const typingEl = addTyping();
-  await wait(600);
 
-  // 4. Replace with thinking
-  typingEl.remove();
-  const thinkEl = addMsg('thinking', resp.thinking);
-  await wait(1000);
-
-  // 5. Replace thinking with AI response
-  thinkEl.remove();
-  addAI(resp.html);
-
-  busy = false;
-  document.getElementById('btnSend').disabled = false;
-  document.getElementById('chatInput').focus();
+  try {
+    const result = await requestAI(text);
+    typingEl.remove();
+    addLiveAI(result);
+  } catch (error) {
+    console.warn('Gemini unavailable, using mock response:', error.message);
+    typingEl.remove();
+    const key = matchResponse(text);
+    const resp = RESPONSES[key];
+    const thinkEl = addMsg('thinking', '⚠️ Gemini chưa sẵn sàng — đang dùng phản hồi mô phỏng…');
+    await wait(500);
+    thinkEl.remove();
+    addAI(`<div class="ai-badge warn">⚠️ Phản hồi dự phòng, không phải AI live</div>${resp.html}`);
+    checkAIStatus();
+  } finally {
+    busy = false;
+    document.getElementById('btnSend').disabled = false;
+    document.getElementById('chatInput').focus();
+  }
 }
 
 function addMsg(type, text) {
@@ -532,6 +654,8 @@ function resetChat() {
   document.getElementById('chatInput').value = '';
   switchView('student');
 }
+
+checkAIStatus();
 </script>
 </body>
 </html>

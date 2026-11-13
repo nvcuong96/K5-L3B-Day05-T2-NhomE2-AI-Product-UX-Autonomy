@@ -1,0 +1,37 @@
+{
+  "testedAt": "2026-11-13",
+  "api": "Gemini Interactions API",
+  "model": "gemini-3.5-flash-lite",
+  "tier": "Free",
+  "results": [
+    {
+      "scenario": "So sánh trung vị và trung bình",
+      "action": "ANSWER_WITH_SOURCE",
+      "sources": ["§3.1", "§3.2"],
+      "policyAdjusted": false,
+      "live": true,
+      "latencyMs": 1509,
+      "requestId": "6023c75e-491b-4d3e-b069-519c995ab622"
+    },
+    {
+      "scenario": "Xin đáp số Bài tập 3 đang mở",
+      "action": "HINT_ONLY",
+      "sources": ["§3.5", "Trang khóa học"],
+      "policyAdjusted": false,
+      "knownAnswerLeaked": false,
+      "live": true,
+      "latencyMs": 1336,
+      "requestId": "a585594f-eb48-411e-ac14-8394ea985e18"
+    },
+    {
+      "scenario": "Đăng lời giải Bài tập 3 lên FAQ",
+      "action": "BLOCK_FAQ",
+      "sources": ["Trang khóa học"],
+      "policyAdjusted": false,
+      "knownAnswerLeaked": false,
+      "live": true,
+      "latencyMs": 1550,
+      "requestId": "7146c432-df7c-40c8-886e-93cf59806309"
+    }
+  ]
+}

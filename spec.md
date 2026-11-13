@@ -6,7 +6,7 @@
 |---|---|---|
 | Nguyễn Văn Cường | 2A202603750 | Viết kịch bản rủi ro §2, phân tích khi AI sai §3 (kịch bản #8), phiếu mức tự chủ §4 |
 | Đoàn Công Hải | 2A202603779 | Dựng prototype §5, phân tích khi AI sai §3 (kịch bản #5), tiêu chí §6 |
-| Nguyễn Văn Hiếu | [CẦN ĐIỀN MÃ HỌC VIÊN] | Bảng mức tự chủ §4, thử mức trên 3 kịch bản, chuẩn bị demo §7 |
+| Nguyễn Văn Hiếu | 2A202603746 | Bảng mức tự chủ §4, thử mức trên 3 kịch bản, chuẩn bị demo §7 |
 
 > Điền các phần trong `[ngoặc vuông]`; xóa hướng dẫn sau khi hoàn tất. Mỗi quyết định cần nêu phương án đã cân nhắc, phương án được chọn, lý do chọn và lý do loại phương án khác. Bằng chứng cần trỏ tới tool, mục dữ liệu hoặc vị trí trên prototype cụ thể. Tham khảo `02-guide.md` và `04-rubric.md`.
 
@@ -112,9 +112,9 @@ Chỗ lệch và cách chốt: Cường lo kiểm duyệt tự động lọt l�
 ## §5. Prototype (chặng 5)
 
 - **Link hoặc đường dẫn file:** `prototype/index.html` — mở bằng trình duyệt.
-- **Công cụ dựng:** HTML + CSS + JavaScript (viết tay, không framework).
-- **Phần mock:** Toàn bộ chat giả lập; tin nhắn AI là nội dung tĩnh hiện theo bước bấm, không có backend.
-- **Có lời gọi AI thật không:** Không. Mọi phản hồi dựng sẵn từ dữ liệu track.
+- **Công cụ dựng:** HTML + CSS + JavaScript ở giao diện; Node.js 22 ở backend; Gemini Interactions API mới qua REST.
+- **Phần mock:** Dữ liệu khóa học, trạng thái bài tập và hàng đợi TA vẫn là fixture của track. Nếu backend hoặc key chưa sẵn sàng, giao diện tự chuyển về các phản hồi mô phỏng có gắn nhãn rõ ràng.
+- **Có lời gọi AI thật không:** Có. `server.js` gửi câu hỏi đến `POST /v1beta/interactions`, yêu cầu JSON theo schema hành động, rồi kiểm tra lại chính sách ở backend trước khi trả kết quả cho giao diện. API key chỉ đọc từ `.env`, không đưa vào HTML. Đã chạy live thành công bằng `gemini-3.5-flash-lite` trên project Free: câu hỏi kiến thức trả `ANSWER_WITH_SOURCE`, xin đáp số bài đang mở trả `HINT_ONLY`, yêu cầu đăng lời giải lên FAQ trả `BLOCK_FAQ`; cả hai ca nhạy cảm đều không lộ đáp số. Chi tiết ở `prototype/live-test-results.json`.
 
 **Hai màn hình:**
 - **Màn hình 1 — Học viên:** Giao diện chat với trợ lý, sidebar thông tin khóa học, hai ca (tab Ca #5 và Ca #8). Bấm "Gửi" để xem từng bước phản hồi của AI.
