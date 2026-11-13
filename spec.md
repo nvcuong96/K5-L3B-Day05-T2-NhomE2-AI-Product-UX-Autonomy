@@ -13,12 +13,12 @@
 ## §1. Lát cắt & phạm vi
 
 **Lát cắt (chép nguyên văn từ track T2):**  
-[Dán lát cắt của nhóm tại đây]
+Trong trợ lý học bài của trang khoá học (kiểu ChatGPT Study mode), khi học viên đang hỏi bài lúc tối muộn, khi không còn ai để hỏi, AI giảng kèm trích tài liệu, hỏi lại cho rõ, gợi ý từng bước, hay nói thẳng "tài liệu không có, hỏi giảng viên", để học viên hiểu đúng bài mình đang học, không chép đáp án, không học sai mà không biết.
 
 **Ba việc sản phẩm sẽ KHÔNG làm:**
-1. [Việc không làm] — [Lý do].
-2. [Việc không làm] — [Lý do].
-3. [Việc không làm] — [Lý do].
+1. Không đưa hoặc xác nhận đáp án của bài tập đang mở — để học viên tự làm và học qua gợi ý thay vì chép đáp án.
+2. Không giảng nội dung của buổi học chưa mở hoặc không có trong tài liệu — để tránh đưa thông tin chưa được kiểm chứng; chỉ nêu buổi dự kiến học nếu phù hợp.
+3. Không tự đăng câu trả lời lên FAQ cho cả lớp khi chưa được duyệt — vì câu trả lời sai có thể ảnh hưởng nhiều học viên và khó thu hồi hoàn toàn.
 
 ## §2. Kịch bản rủi ro (chặng 2)
 
