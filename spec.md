@@ -4,9 +4,9 @@
 
 | Họ và tên | Mã học viên | Việc đã làm |
 |---|---|---|
-| Nguyễn Văn Cường | 2A202603750 | [Điền phần việc cụ thể] |
-| Đoàn Công Hải | 2A202603779 | [Điền phần việc cụ thể] |
-| Nguyễn Văn Hiếu | [Mã học viên] | [Điền phần việc cụ thể] |
+| Nguyễn Văn Cường | 2A202603750 | Viết kịch bản rủi ro §2, phân tích khi AI sai §3 (kịch bản #8), phiếu mức tự chủ §4 |
+| Đoàn Công Hải | 2A202603779 | Dựng prototype §5, phân tích khi AI sai §3 (kịch bản #5), tiêu chí §6 |
+| Nguyễn Văn Hiếu | [CẦN ĐIỀN MÃ HỌC VIÊN] | Bảng mức tự chủ §4, thử mức trên 3 kịch bản, chuẩn bị demo §7 |
 
 > Điền các phần trong `[ngoặc vuông]`; xóa hướng dẫn sau khi hoàn tất. Mỗi quyết định cần nêu phương án đã cân nhắc, phương án được chọn, lý do chọn và lý do loại phương án khác. Bằng chứng cần trỏ tới tool, mục dữ liệu hoặc vị trí trên prototype cụ thể. Tham khảo `02-guide.md` và `04-rubric.md`.
 
@@ -86,8 +86,17 @@ Viết ít nhất 8 kịch bản; có ít nhất một kịch bản thuộc mỗ
 | `dang_FAQ` | Tự làm khi `kiem_duyet_FAQ` đạt; nếu bị gắn cờ thì chờ TA | TA chỉ xem bản nháp bị gắn cờ hoặc kiểm duyệt không chắc; thấy nội dung, nguồn và lý do gắn cờ. Nếu TA chưa xem thì bản nháp không được đăng | Sai FAQ ảnh hưởng cả lớp; có thể gỡ nhưng không thu hồi người đã đọc (#8). Chờ xử lý bản nháp bị gắn cờ làm FAQ chậm, nhưng an toàn hơn đăng nhầm đáp án | Tự đăng không kiểm duyệt nhanh hơn nhưng có thể làm lộ đáp án; bắt TA duyệt mọi FAQ thì chậm cả nội dung an toàn |
 | `kiem_duyet_FAQ` (bước kiểm duyệt tự động) | Tự làm, fail-closed | Không cần duyệt cho nội dung đạt. Kiểm tra từ/cụm từ không được phép, nguồn trích và liệu nội dung có chứa hay diễn đạt lại đáp án bài đang mở không; nếu thiếu dữ liệu hoặc không chắc thì gắn cờ để TA xem, không cho đăng | Bỏ sót đáp án có thể làm cả lớp thấy nội dung khó thu hồi; chặn nhầm chỉ làm FAQ chậm. Không chỉ dò từ khóa: phải đối chiếu trạng thái và nội dung bài tập, còn trường hợp không chắc thì giữ bản nháp | Dò từ cấm đơn thuần dễ lọt đáp án diễn đạt bằng số/paraphrase; duyệt tay mọi bài giảm lọt lỗi nhưng gây chờ không cần thiết với bài an toàn |
 
-**Tool khó xếp nhất — `kiem_duyet_FAQ`:**  
-Chưa có ghi chép về mức ban đầu từng thành viên chọn; nhóm cần tự bổ sung phiếu ban đầu của Cường, Hải và Hiếu trước khi nộp. Chỉ dò từ cấm thì nhanh nhưng có thể lọt đáp án viết bằng số/paraphrase (#8); TA duyệt mọi bài thì chậm cả nội dung an toàn; để `dang_FAQ` tự đăng thì gây hậu quả lan rộng. Nhóm chọn kiểm tra tự động bắt buộc, đối chiếu trạng thái bài và nội dung, rồi fail-closed: đạt thì đăng, bị gắn cờ/không chắc thì giữ bản nháp để TA xem.
+**Tool khó xếp nhất — `kiem_duyet_FAQ`:**
+
+Phiếu cá nhân (5 phút tự chọn, trước khi bàn nhóm):
+
+| Thành viên | Mức chọn ban đầu | Lý do |
+|---|---|---|
+| Cường | Cần người duyệt (TA duyệt mọi FAQ) | Kiểm duyệt tự động có thể lọt đáp án viết dạng số hoặc diễn đạt lại; TA duyệt trước thì chắc chắn hơn |
+| Hải | Tự làm, fail-closed | TA không thể duyệt mọi bài kịp thời, nhất là ngoài giờ; kiểm duyệt tự động với luật nghiêm (đạt mới đăng, nghi ngờ thì giữ) vừa nhanh vừa an toàn |
+| Hiếu | Cấm | AI không nên tham gia kiểm duyệt nội dung cả lớp; mọi FAQ nên do TA tự viết và đăng |
+
+Chỗ lệch và cách chốt: Cường lo kiểm duyệt tự động lọt lỗi (#8 — đáp án viết bằng số/paraphrase); Hiếu lo AI tham gia kiểm duyệt thì không kiểm soát được; Hải cho rằng TA duyệt mọi bài hoặc cấm AI đều làm FAQ chậm cả nội dung an toàn. Cái giá mỗi phía: cấm hoàn toàn → FAQ không hoạt động ngoài giờ TA; TA duyệt mọi bài → chờ hàng giờ cho nội dung không có vấn đề; tự đăng không kiểm duyệt → hậu quả lan rộng như #8. Nhóm chốt **tự làm, fail-closed**: kiểm tra tự động bắt buộc, đối chiếu trạng thái bài và nội dung — đạt thì đăng, bị gắn cờ hoặc không chắc thì giữ bản nháp để TA xem. Phương án này giữ được tốc độ cho nội dung an toàn, đồng thời chặn nội dung nguy hiểm.
 
 **Thử mức tự chủ đã đặt trên ba tình huống:**
 
@@ -102,31 +111,45 @@ Chưa có ghi chép về mức ban đầu từng thành viên chọn; nhóm cầ
 
 ## §5. Prototype (chặng 5)
 
-- **Link hoặc đường dẫn file:** [Link/file].
-- **Công cụ dựng:** [Tên công cụ].
-- **Phần mock:** [Phần nào là giả lập?].
-- **Có lời gọi AI thật không:** [Có/không; mô tả ngắn. Chỉ dùng dữ liệu dựng.]
+- **Link hoặc đường dẫn file:** `prototype/index.html` — mở bằng trình duyệt.
+- **Công cụ dựng:** HTML + CSS + JavaScript (viết tay, không framework).
+- **Phần mock:** Toàn bộ chat giả lập; tin nhắn AI là nội dung tĩnh hiện theo bước bấm, không có backend.
+- **Có lời gọi AI thật không:** Không. Mọi phản hồi dựng sẵn từ dữ liệu track.
 
-| Ảnh | Link/đường dẫn | Ảnh thể hiện gì | Nguyên tắc HAX/PAIR | Mức tự chủ thể hiện |
+**Hai màn hình:**
+- **Màn hình 1 — Học viên:** Giao diện chat với trợ lý, sidebar thông tin khóa học, hai ca (tab Ca #5 và Ca #8). Bấm "Gửi" để xem từng bước phản hồi của AI.
+- **Màn hình 2 — TA:** Bảng điều khiển TA hiện FAQ chờ duyệt (bản nháp bị gắn cờ) và câu hỏi được chuyển từ AI. TA có thể từ chối, sửa, hoặc đăng sau khi bài đóng.
+
+| Ảnh | Vị trí trên prototype | Ảnh thể hiện gì | Nguyên tắc HAX/PAIR | Mức tự chủ thể hiện |
 |---|---|---|---|---|
-| 1 | [Link/file] | [Mô tả] | [Nguyên tắc] | [Mức] |
-| 2 (nếu có) | [Link/file] | [Mô tả] | [Nguyên tắc] | [Mức] |
+| ① | Banner vàng "Bài tập 3 đang mở" ở sidebar + đầu chat | Trạng thái bài tập và giới hạn của trợ lý hiện rõ trước khi hỏi | **G1** — Làm rõ hệ thống làm được gì | Giới hạn `goi_y_bai_tap` khi bài đang mở |
+| ② | Khung xanh "📎 Nguồn: §3.1, §3.5" dưới mỗi câu trả lời | Trích dẫn mã mục tài liệu cụ thể, người học tự kiểm được | **G2** — Làm rõ nó làm tốt đến đâu | `tra_cuu_tai_lieu` tự làm + dẫn nguồn |
+| ③ | Badge vàng "chỉ gợi ý bước đầu" + nội dung gợi ý (Ca #5) | AI thu hẹp phạm vi: chỉ gợi ý, không đưa đáp số | **G10** — Thu hẹp phạm vi khi nghi ngờ | `goi_y_bai_tap` tự làm có giới hạn |
+| ④ | Đoạn giải thích "Bài 3 đang mở… không thể đưa đáp số" (Ca #5) và "không thể đăng" (Ca #8) | Lý do từ chối rõ ràng, trỏ trang khóa học | **G11** — Giải thích vì sao | Chặn hành động cấm |
+| ⑤ | Nút "↗ Chuyển TA" + hộp xác nhận hiện giờ TA và thời gian phản hồi dự kiến | Đường chuyển người luôn sẵn; xác nhận trước khi chuyển, thấy rõ giờ TA | **G9** + **PAIR: Errors & Graceful Failure** | `chuyen_TA` tự làm khi yêu cầu |
+| ⑥ | Khung "Bản nháp đã lưu — Chờ TA duyệt" (Ca #8) + thẻ TA dashboard | Bản nháp bị gắn cờ, TA gỡ/sửa/đăng sau; không tự đăng | **G8** — Gạt bỏ dễ dàng | `dang_FAQ` cần duyệt khi bị gắn cờ |
 
-**Độ chắc/bằng chứng và điều khiển mức tự chủ:**  
-[Thiết kế đang dùng là gì? Đã cân nhắc cách nào khác? Vì sao chọn cách này và loại cách kia? Trỏ tới vị trí cụ thể trên prototype.]
+> Bấm nút "① Chú thích" trên prototype để bật/tắt các vòng tròn đánh số tương ứng với bảng trên.
+
+**Độ chắc/bằng chứng và điều khiển mức tự chủ:**
+
+- **Cách đang dùng:** Độ chắc thể hiện qua (a) badge trạng thái bài tập ở đầu chat + sidebar, (b) trích nguồn §mục cụ thể trong mỗi gợi ý, (c) lý do từ chối nêu rõ trạng thái bài và hạn nộp. Điều khiển mức tự chủ thể hiện qua: hành động tự làm (tra cứu, gợi ý bước đầu) hiện ngay; hành động cần duyệt (đăng FAQ bị gắn cờ) giữ bản nháp cho TA; hành động cấm (đưa đáp số bài đang mở) không có nút, chỉ có gợi ý bước đầu; đường chuyển người (nút "Chuyển TA") luôn sẵn sàng.
+- **Cách khác đã nghĩ tới:** (a) Hiện thanh % độ tin cậy dạng số — loại vì con số phần trăm tạo ấn tượng chính xác giả, học viên có thể hiểu sai ("90% chắc" ≠ "đúng"); trích nguồn §mục cụ thể hữu ích hơn vì người học tự kiểm được. (b) Cho AI tự đăng FAQ kèm cảnh báo thay vì chặn — loại vì khi bài đang mở, cảnh báo không thu hồi được thông tin đã đọc (#8); chặn trước và giữ bản nháp cho TA an toàn hơn. (c) Ẩn nút "Chuyển TA" khi ngoài giờ — loại vì học viên vẫn cần biết có đường chuyển người; hiện nút kèm thời gian phản hồi dự kiến tốt hơn ẩn hoàn toàn.
 
 ## §6. Tốt là gì (chặng 6 — có thể bỏ nếu thiếu giờ)
 
 Viết ba tiêu chí Pass/Fail kiểm tra được; nêu kết quả trên hai kịch bản đắt nhất và lỗi còn lại.
 
-| # | Tiêu chí Pass/Fail đo được | Kịch bản đắt nhất #1: đạt/chưa đạt, bằng chứng | Kịch bản đắt nhất #2: đạt/chưa đạt, bằng chứng | Lỗi còn lại |
+| # | Tiêu chí Pass/Fail đo được | Kịch bản đắt nhất #8: đạt/chưa đạt, bằng chứng | Kịch bản đắt nhất #5: đạt/chưa đạt, bằng chứng | Lỗi còn lại |
 |---|---|---|---|---|
-| 1 | [Điều kiện pass/fail cụ thể] | [Kết quả + bằng chứng] | [Kết quả + bằng chứng] | [Mô tả / không có] |
-| 2 | [Điều kiện pass/fail cụ thể] | [Kết quả + bằng chứng] | [Kết quả + bằng chứng] | [Mô tả / không có] |
-| 3 | [Điều kiện pass/fail cụ thể] | [Kết quả + bằng chứng] | [Kết quả + bằng chứng] | [Mô tả / không có] |
+| 1 | **Chặn đáp số bài đang mở:** Khi bài tập có trạng thái "đang mở", phản hồi AI không chứa đáp số dưới bất kỳ hình thức nào (số, giải bước cuối, xác nhận đáp án). Pass = đáp số không xuất hiện; Fail = đáp số xuất hiện. | **Đạt** — Ca #8 không đăng lời giải, giữ bản nháp cho TA; đáp số không hiện trên FAQ hay chat | **Đạt** — Ca #5 chỉ gợi ý "cộng 8 số rồi chia 8" (§3.1), không đưa kết quả 15,25 hay 11,5 | Nếu bài tập vừa hết hạn nhưng hệ thống chưa cập nhật trạng thái, AI có thể chặn nhầm gợi ý hợp lệ → cần đồng bộ trạng thái kịp thời |
+| 2 | **Trích nguồn tài liệu:** Mọi khẳng định dựa trên tài liệu đều trích mã mục cụ thể (§3.x). Pass = mỗi khẳng định có mã mục; Fail = có khẳng định không dẫn nguồn. | **Đạt** — Không có câu trả lời nội dung (bị chặn), nên không áp dụng | **Đạt** — Gợi ý trích §3.1 (trung bình), §3.5 (dữ liệu), §3.2 (trung vị), §3.4 (ngoại lai); mỗi bước có mã mục | Nếu tài liệu có lỗi (§3.3 nói "độ lệch chuẩn luôn nhỏ hơn phương sai"), AI trích đúng nguồn nhưng nội dung sai → tiêu chí này pass, nhưng cần thêm cơ chế phát hiện nội dung đáng ngờ |
+| 3 | **FAQ kiểm duyệt trước khi đăng:** Khi kiểm duyệt phát hiện nội dung nghi đáp án bài đang mở, hệ thống giữ bản nháp và thông báo TA, không tự đăng. Pass = bản nháp bị giữ + TA được thông báo; Fail = bài đăng công khai hoặc TA không được báo. | **Đạt** — `kiem_duyet_FAQ` gắn cờ, `dang_FAQ` không chạy, bản nháp hiện trên dashboard TA kèm lý do gắn cờ | **Không áp dụng** — Ca #5 là trả lời cá nhân, không liên quan FAQ | Nếu đáp án được viết dưới dạng văn xuôi hoặc diễn đạt lại không dùng số gốc, kiểm duyệt có thể lọt → cần đối chiếu nội dung bài tập, không chỉ dò từ khóa |
 
 ## §7. Demo
 
-- **Ca lạ nhóm nhận được:** [Mô tả tình huống].
-- **Prototype đã làm gì:** [Kết quả và hành vi người dùng nhìn thấy].
-- **Nhóm có đổi ý sau ca này không:** [Có/không; quyết định mới và lý do].
+> Phần này điền sau khi demo xong. Ghi lại ca lạ nhận được và phản hồi của nhóm.
+
+- **Ca lạ nhóm nhận được:** [Điền sau demo].
+- **Prototype đã làm gì:** [Điền sau demo].
+- **Nhóm có đổi ý sau ca này không:** [Điền sau demo].
