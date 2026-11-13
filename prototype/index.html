@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trợ lý học bài — Nhập môn Phân tích Dữ liệu</title>
+<style>
+:root{--blue:#2563eb;--blue-light:#dbeafe;--red:#dc2626;--red-light:#fee2e2;--yellow:#f59e0b;--yellow-light:#fef3c7;--green:#16a34a;--green-light:#dcfce7;--gray:#6b7280;--gray-light:#f3f4f6;--radius:12px;--shadow:0 2px 8px rgba(0,0,0,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f5;color:#1e293b;min-height:100vh}
+
+/* HEADER */
+.header{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.header .logo{font-size:20px;font-weight:700;color:var(--blue);white-space:nowrap}
+.header .course{color:var(--gray);font-size:14px;flex:1}
+.view-tabs{display:flex;gap:4px;background:var(--gray-light);border-radius:8px;padding:3px}
+.view-tabs button{border:none;background:none;padding:7px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-weight:500;color:var(--gray);transition:.2s}
+.view-tabs button.active{background:#fff;color:var(--blue);box-shadow:var(--shadow)}
+.btn-annot{border:1px solid var(--blue);background:var(--blue-light);color:var(--blue);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn-annot.on{background:var(--blue);color:#fff}
+.btn-reset{border:1px solid #d1d5db;background:#fff;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;color:var(--gray)}
+.btn-reset:hover{background:var(--gray-light)}
+
+/* LAYOUT */
+.main{display:flex;height:calc(100vh - 53px)}
+.sidebar{width:270px;background:#fff;border-right:1px solid #e2e8f0;padding:20px;overflow-y:auto;flex-shrink:0}
+.sidebar h3{font-size:13px;text-transform:uppercase;color:var(--gray);letter-spacing:.5px;margin-bottom:10px}
+.info-card{background:var(--gray-light);border-radius:8px;padding:12px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.badge-open{background:var(--red-light);color:var(--red)}
+.badge-closed{background:var(--green-light);color:var(--green)}
+.badge-ta{background:var(--yellow-light);color:#92400e}
+
+/* CHAT PANEL */
+.chat-panel{flex:1;display:flex;flex-direction:column;min-width:0}
+.chat-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+
+/* Messages */
+.msg{max-width:720px;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.msg-user{align-self:flex-end;background:var(--blue);color:#fff;padding:12px 16px;border-radius:var(--radius) var(--radius) 4px var(--radius);font-size:14px;line-height:1.5}
+.msg-ai{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;border-radius:4px var(--radius) var(--radius) var(--radius);padding:16px;font-size:14px;line-height:1.7;box-shadow:var(--shadow)}
+.msg-system{align-self:center;background:var(--yellow-light);border:1px solid #fcd34d;border-radius:8px;padding:8px 16px;font-size:12px;color:#92400e;text-align:center;position:relative}
+
+/* Typing indicator */
+.typing{align-self:flex-start;display:flex;gap:5px;padding:12px 18px;background:#fff;border:1px solid #e2e8f0;border-radius:4px var(--radius) var(--radius) var(--radius);box-shadow:var(--shadow)}
+.typing span{width:8px;height:8px;background:#cbd5e1;border-radius:50%;animation:bounce .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{to{background:var(--blue);transform:translateY(-4px)}}
+
+/* AI parts */
+.ai-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:10px}
+.ai-badge.warn{background:var(--yellow-light);color:#92400e}
+.ai-badge.block{background:var(--red-light);color:var(--red)}
+.ai-badge.ok{background:var(--green-light);color:var(--green)}
+.ai-source{background:var(--blue-light);border-radius:6px;padding:8px 12px;margin-top:10px;font-size:12px;color:var(--blue);display:flex;align-items:center;gap:6px}
+.ai-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ai-actions button{border:1px solid #d1d5db;background:#fff;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;transition:.15s;font-weight:500}
+.ai-actions button:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+.ai-actions button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ai-actions button.primary:hover{background:#1d4ed8}
+.ai-hint{background:#f0fdf4;border-left:3px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:13px;line-height:1.7}
+.ai-draft{background:var(--gray-light);border:1px dashed #d1d5db;border-radius:8px;padding:12px;margin:10px 0;font-size:13px}
+.ai-draft-header{font-weight:600;color:var(--red);font-size:12px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+
+/* Suggested chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:8px 20px;border-top:1px solid #e2e8f0;background:#fff}
+.chips label{font-size:11px;color:var(--gray);margin-right:4px;line-height:32px}
+.chip{border:1px solid #d1d5db;background:#fff;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;transition:.15s;white-space:nowrap}
+.chip:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+
+/* Input bar */
+.input-bar{background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;gap:10px;align-items:center}
+.input-bar input{flex:1;border:1px solid #d1d5db;border-radius:8px;padding:10px 14px;font-size:14px;outline:none}
+.input-bar input:focus{border-color:var(--blue)}
+.btn-send{background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600;transition:.15s}
+.btn-send:hover{background:#1d4ed8}
+.btn-send:disabled{opacity:.4;cursor:default}
+
+/* Annotations */
+.ann{display:none;width:0;height:0;position:relative}
+.ann::after{content:attr(data-n);position:absolute;top:-12px;right:-12px;width:22px;height:22px;background:var(--blue);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.25);pointer-events:none}
+body.show-ann .ann{display:inline-block}
+
+/* Legend */
+.legend{background:#fff;border-radius:var(--radius);padding:16px;margin-top:8px;font-size:12px;line-height:2;box-shadow:var(--shadow);display:none}
+body.show-ann .legend{display:block}
+.legend h4{margin-bottom:6px;font-size:13px}
+.legend .item{display:flex;align-items:baseline;gap:6px}
+.legend .num{width:20px;height:20px;background:var(--blue);color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+
+/* TA VIEW */
+.ta-view{display:none;flex:1;padding:24px;overflow-y:auto}
+.ta-view.active{display:block}
+.ta-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;border-left:4px solid var(--yellow)}
+.ta-card.flagged{border-left-color:var(--red)}
+.ta-card h4{font-size:14px;margin-bottom:8px}
+.ta-card .meta{font-size:12px;color:var(--gray);margin-bottom:10px}
+.ta-card .content-preview{background:var(--gray-light);padding:12px;border-radius:8px;font-size:13px;margin-bottom:12px;line-height:1.6}
+.ta-card .ta-actions{display:flex;gap:8px}
+.ta-card .ta-actions button{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #d1d5db;background:#fff;font-weight:500}
+.ta-card .ta-actions .reject{color:var(--red);border-color:var(--red)}
+.ta-card .ta-actions .approve{color:var(--green);border-color:var(--green)}
+
+/* Confirm overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeUp .2s}
+.overlay-box{background:#fff;border-radius:var(--radius);padding:24px;max-width:420px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.overlay-box h3{margin-bottom:8px;font-size:16px}
+.overlay-box p{font-size:14px;color:var(--gray);line-height:1.6;margin-bottom:16px}
+.overlay-box .actions{display:flex;gap:8px;justify-content:flex-end}
+.overlay-box .actions button{padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500;border:1px solid #d1d5db;background:#fff}
+.overlay-box .actions .primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">📚 Trợ lý học bài</div>
+  <div class="course">Nhập môn Phân tích Dữ liệu · Buổi 3</div>
+  <div class="view-tabs">
+    <button class="active" onclick="switchView('student')">👤 Học viên</button>
+    <button onclick="switchView('ta')">🎓 Màn hình TA</button>
+  </div>
+  <button class="btn-annot" onclick="toggleAnnotations()">① Chú thích</button>
+  <button class="btn-reset" onclick="resetChat()">↺ Làm mới</button>
+</div>
+
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <h3>Thông tin khóa học</h3>
+    <div class="info-card">
+      <strong>Buổi đã mở:</strong> 1, 2, 3<br>
+      <strong>Buổi tiếp:</strong> 4 — Trực quan hoá dữ liệu
+    </div>
+    <div class="info-card" style="position:relative">
+      <span class="ann" data-n="①"></span>
+      <strong>Bài tập 2:</strong> <span class="badge badge-closed">Đã hết hạn</span><br>
+      Đáp án công bố 07/11<br><br>
+      <strong>Bài tập 3:</strong> <span class="badge badge-open">Đang mở</span><br>
+      Hạn: 13/11/2026 23:59
+    </div>
+    <div class="info-card">
+      <strong>Giờ TA:</strong> <span class="badge badge-ta">08:00–22:00</span><br>
+      <span style="font-size:12px;color:var(--gray)">Ngoài giờ → phản hồi từ 08:00 hôm sau</span>
+    </div>
+    <div class="legend">
+      <h4>Chú thích thiết kế (HAX / PAIR)</h4>
+      <div class="item"><span class="num">①</span><b>G1</b> — Làm rõ hệ thống làm được gì</div>
+      <div class="item"><span class="num">②</span><b>G2</b> — Làm rõ nó làm tốt đến đâu (nguồn)</div>
+      <div class="item"><span class="num">③</span><b>G10</b> — Thu hẹp phạm vi khi nghi ngờ</div>
+      <div class="item"><span class="num">④</span><b>G11</b> — Giải thích vì sao</div>
+      <div class="item"><span class="num">⑤</span><b>G9+PAIR</b> — Sửa dễ / Graceful Failure</div>
+      <div class="item"><span class="num">⑥</span><b>G8</b> — Gạt bỏ dễ dàng</div>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="chat-panel" id="studentView">
+    <div class="chat-body" id="chatBody">
+      <!-- system banner -->
+      <div class="msg msg-system">
+        <span class="ann" data-n="①"></span>
+        ⚠️ Bài tập 3 đang mở — Trợ lý chỉ gợi ý bước đầu, không đưa đáp số
+      </div>
+      <div class="msg msg-ai">
+        Chào bạn! Mình là trợ lý học bài của khóa <b>Nhập môn Phân tích Dữ liệu</b>. Bạn đang học buổi 3 — Thống kê mô tả. Hỏi mình bất cứ điều gì về bài học nhé! 😊
+      </div>
+    </div>
+
+    <!-- Suggested question chips -->
+    <div class="chips" id="chips">
+      <label>Thử hỏi:</label>
+      <span class="chip" onclick="sendMessage('Trung vị khác trung bình cộng chỗ nào ạ?')">Trung vị vs trung bình?</span>
+      <span class="chip" onclick="sendMessage('Bài 3 đang mở, gửi em đáp số luôn với, em sắp nộp rồi')">🔴 Xin đáp số bài 3</span>
+      <span class="chip" onclick="sendMessage('Đăng luôn lời giải bài 3 lên FAQ cả lớp cho mọi người với ạ')">🔴 Đăng FAQ bài 3</span>
+      <span class="chip" onclick="sendMessage('Hạn nộp bài 3 là khi nào ạ?')">Hạn nộp bài 3?</span>
+      <span class="chip" onclick="sendMessage('Cô ơi slide 12 nói độ lệch chuẩn tính thế nào ạ?')">Slide 12?</span>
+    </div>
+
+    <!-- Input -->
+    <div class="input-bar">
+      <input type="text" id="chatInput" placeholder="Nhập câu hỏi…" onkeydown="if(event.key==='Enter')sendFromInput()">
+      <button class="btn-send" id="btnSend" onclick="sendFromInput()">Gửi ▶</button>
+    </div>
+  </div>
+
+  <!-- TA VIEW -->
+  <div class="ta-view" id="taView">
+    <h2 style="margin-bottom:20px;font-size:20px">🎓 Bảng điều khiển TA</h2>
+    <h3 style="font-size:14px;color:var(--gray);margin-bottom:12px">🚩 FAQ CHỜ DUYỆT (1)</h3>
+    <div class="ta-card flagged" style="position:relative">
+      <span class="ann" data-n="⑥"></span>
+      <h4>🚩 Lời giải Bài tập 3 — <span style="color:var(--red)">Gắn cờ: đáp án bài đang mở</span></h4>
+      <div class="meta">Yêu cầu bởi: Học viên · 23:15 · Ngoài giờ TA</div>
+      <div class="content-preview">
+        <strong>Nội dung dự kiến đăng:</strong><br>
+        "Bài 3: Trung bình = (9+10+10+11+12+12+13+45)/8 = 15,25 triệu. Trung vị = (11+12)/2 = 11,5 triệu. Trung vị phù hợp hơn vì 45 triệu là giá trị ngoại lai."<br><br>
+        <strong>Lý do gắn cờ:</strong> Kiểm duyệt phát hiện nội dung khớp đáp án Bài 3 (đang mở, hạn 13/11/2026 23:59). Đăng sẽ ảnh hưởng toàn lớp.
+      </div>
+      <div class="ta-actions">
+        <button class="reject" onclick="alert('Đã từ chối. Bản nháp bị xóa.')">✕ Từ chối</button>
+        <button onclick="alert('Đã lưu. Sẽ tự đăng sau 13/11 23:59.')">📅 Đăng sau khi hết hạn</button>
+        <button onclick="alert('Mở trình soạn thảo…')">✏️ Sửa rồi đăng</button>
+      </div>
+    </div>
+    <h3 style="font-size:14px;color:var(--gray);margin:24px 0 12px">📩 CÂU HỎI CHUYỂN TỪ AI (1)</h3>
+    <div class="ta-card">
+      <h4>Học viên cần hỗ trợ Bài 3 — đáp số</h4>
+      <div class="meta">Chuyển lúc: 23:20 · Ngoài giờ TA · Phản hồi dự kiến: 08:00 ngày mai</div>
+      <div class="content-preview">
+        <strong>Câu hỏi gốc:</strong> "Bài 3 đang mở, gửi em đáp số luôn với, em sắp nộp rồi"<br><br>
+        <strong>AI đã làm:</strong> Gợi ý bước đầu câu (a): cộng 8 số, chia 8 (dẫn §3.1 và §3.5). Gợi ý câu (b): so sánh trung bình và trung vị, xem giá trị ngoại lai (dẫn §3.2, §3.4). <em>Không đưa đáp số.</em>
+      </div>
+      <div class="ta-actions">
+        <button class="approve" onclick="alert('Mở cửa sổ trả lời…')">💬 Trả lời</button>
+        <button onclick="alert('Đã ghi chú.')">📝 Ghi chú</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- OVERLAY (Transfer TA) -->
+<div class="overlay" id="overlayTA" style="display:none">
+  <div class="overlay-box">
+    <h3>↗ Chuyển câu hỏi cho TA?</h3>
+    <p>⏰ Giờ TA: <b>08:00–22:00</b>. Hiện tại <b>ngoài giờ TA</b>.<br>
+    Phản hồi dự kiến từ <b>08:00 ngày mai</b>.<br><br>
+    Câu hỏi và ngữ cảnh (gợi ý AI đã gửi) sẽ được chuyển cùng.</p>
+    <div class="actions">
+      <button onclick="closeOverlay()">Quay lại</button>
+      <button class="primary" onclick="confirmTransfer()">Xác nhận chuyển TA</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== RESPONSES DATABASE ===== */
+const RESPONSES = {
+  // Ca #5 — Xin đáp số bài đang mở
+  'xin_dap_so': {
+    thinking: '🔍 Đang kiểm tra trạng thái bài tập…',
+    html: `
+      <div style="position:relative"><span class="ann" data-n="③"></span>
+        <div class="ai-badge warn">⚠️ Bài 3 đang mở — chỉ gợi ý bước đầu</div>
+      </div>
+      <p style="position:relative"><span class="ann" data-n="④"></span>
+        Mình hiểu bạn đang gấp! Tuy nhiên, <b>Bài tập 3 đang mở</b> (hạn 13/11/2026 23:59), nên mình <b>không thể đưa đáp số</b>. Nhưng mình gợi ý bước đầu cho câu (a):</p>
+      <div class="ai-hint">
+        📖 Dữ liệu lương ở <b>§3.5</b>: 9, 10, 10, 11, 12, 12, 13, 45 (triệu đồng).<br>
+        → <b>Trung bình</b> = tổng ÷ số giá trị. Bạn thử cộng 8 số này rồi chia 8 xem?<br>
+        <em>(Xem lại cách tính ở §3.1)</em>
+      </div>
+      <div class="ai-source" style="position:relative"><span class="ann" data-n="②"></span>
+        📎 Nguồn: Tài liệu buổi 3 — §3.1 (trung bình cộng), §3.5 (dữ liệu bài tập)
+      </div>
+      <div class="ai-actions" style="position:relative"><span class="ann" data-n="⑤"></span>
+        <button onclick="sendMessage('Gợi ý thêm cho câu (b)')">💡 Gợi ý thêm câu (b)</button>
+        <button class="primary" onclick="showOverlay()">↗ Chuyển TA</button>
+      </div>`
+  },
+
+  // Gợi ý thêm câu (b)
+  'goi_y_them': {
+    thinking: '🔍 Đang tìm tài liệu liên quan…',
+    html: `
+      <div class="ai-badge ok">💡 Gợi ý tiếp cho câu (b)</div>
+      <p>Sau khi tính trung bình, hãy tính <b>trung vị</b> theo <b>§3.2</b>: sắp xếp dữ liệu tăng dần, lấy giá trị đứng giữa (hoặc trung bình 2 giá trị giữa nếu số chẵn).</p>
+      <div class="ai-hint">
+        So sánh trung bình và trung vị — con nào mô tả "lương điển hình" của phòng tốt hơn?<br>
+        💡 Gợi ý: nhìn số <b>45</b> trong dữ liệu — nó có phải <b>giá trị ngoại lai</b> (§3.4) không? Ngoại lai ảnh hưởng trung bình hay trung vị nhiều hơn?
+      </div>
+      <div class="ai-source">📎 Nguồn: §3.2 (trung vị), §3.4 (giá trị ngoại lai)</div>
+      <div class="ai-actions">
+        <button class="primary" onclick="showOverlay()">↗ Chuyển TA</button>
+      </div>`
+  },
+
+  // Ca #8 — Đăng FAQ
+  'dang_faq': {
+    thinking: '🔍 Đang kiểm duyệt nội dung…',
+    html: `
+      <div class="ai-badge block">🚫 Không thể đăng — Bài 3 đang mở</div>
+      <p style="position:relative"><span class="ann" data-n="④"></span>
+        Mình <b>không thể đăng lời giải Bài 3 lên FAQ</b> vì bài tập này <b>đang mở</b> (hạn 13/11/2026 23:59). Nếu đăng, cả lớp sẽ thấy lời giải trước khi nộp bài.</p>
+      <div class="ai-draft" style="position:relative"><span class="ann" data-n="⑥"></span>
+        <div class="ai-draft-header">🚩 Bản nháp đã lưu — Chờ TA duyệt</div>
+        <p><b>Nội dung:</b> Lời giải Bài 3 (trung bình, trung vị)</p>
+        <p><b>Lý do gắn cờ:</b> Kiểm duyệt phát hiện nội dung trùng đáp án bài tập đang mở.</p>
+        <p style="color:var(--gray);font-size:12px">TA sẽ xem xét và quyết định có đăng sau khi bài đóng.</p>
+      </div>
+      <div class="ai-actions" style="position:relative"><span class="ann" data-n="⑤"></span>
+        <button onclick="switchView('ta')">📋 Xem trên màn hình TA</button>
+        <button class="primary" onclick="showOverlay()">↗ Chuyển TA</button>
+        <button onclick="reEnable()">💬 Hỏi câu khác</button>
+      </div>`
+  },
+
+  // Trung vị vs trung bình (câu hỏi bình thường)
+  'trung_vi': {
+    thinking: '🔍 Đang tìm trong tài liệu buổi 3…',
+    html: `
+      <div class="ai-badge ok">✓ Tìm thấy trong tài liệu</div>
+      <p>Hay lắm! Đây là hai khái niệm quan trọng ở buổi 3:</p>
+      <div class="ai-hint">
+        <b>Trung bình cộng (§3.1):</b> Tổng các giá trị chia cho số giá trị. Bị kéo mạnh bởi giá trị ngoại lai.<br><br>
+        <b>Trung vị (§3.2):</b> Giá trị đứng giữa khi sắp xếp tăng dần. Ít bị ảnh hưởng bởi ngoại lai → thường dùng cho dữ liệu lệch (ví dụ thu nhập, giá nhà).<br><br>
+        💡 <b>Khi nào dùng cái nào?</b> Nếu dữ liệu đối xứng, trung bình ổn. Nếu có giá trị cực lớn/nhỏ (ngoại lai — §3.4), trung vị mô tả "điển hình" tốt hơn.
+      </div>
+      <div class="ai-source" style="position:relative"><span class="ann" data-n="②"></span>
+        📎 Nguồn: Tài liệu buổi 3 — §3.1 (trung bình), §3.2 (trung vị), §3.4 (giá trị ngoại lai)
+      </div>
+      <div class="ai-actions">
+        <button onclick="sendMessage('Cho em ví dụ cụ thể với ạ')">📝 Cho ví dụ</button>
+        <button class="primary" onclick="showOverlay()">↗ Chuyển TA</button>
+      </div>`
+  },
+
+  // Ví dụ cụ thể
+  'vi_du': {
+    thinking: '🔍 Đang tìm ví dụ trong tài liệu…',
+    html: `
+      <div class="ai-badge ok">💡 Ví dụ từ §3.5</div>
+      <p>Lấy dữ liệu lương ở <b>§3.5</b>: 9, 10, 10, 11, 12, 12, 13, 45 (triệu đồng).</p>
+      <div class="ai-hint">
+        → Trung bình bị kéo lên bởi số <b>45</b> (giá trị ngoại lai theo §3.4).<br>
+        → Trung vị (giá trị giữa) ít bị ảnh hưởng hơn.<br><br>
+        Bạn thử tính cả hai theo §3.1 và §3.2, rồi so sánh xem con nào mô tả "lương điển hình" tốt hơn nhé!
+      </div>
+      <div class="ai-source">📎 Nguồn: §3.5 (bài tập), §3.1, §3.2, §3.4</div>`
+  },
+
+  // Hạn nộp bài 3
+  'han_nop': {
+    thinking: '🔍 Đang kiểm tra trang khóa học…',
+    html: `
+      <div class="ai-badge ok">📅 Thông tin từ trang khóa học</div>
+      <p>Theo trang khóa học, hạn nộp Bài tập 3 là <b>13/11/2026 23:59</b>. Bài tập đang ở trạng thái <b>đang mở</b>.</p>
+      <p style="margin-top:8px;padding:8px 12px;background:var(--yellow-light);border-radius:6px;font-size:13px">
+        ⚠️ Trang khóa học <b>không ghi rõ múi giờ</b>. Nếu bạn cần xác nhận, hãy hỏi TA hoặc giảng viên.
+      </p>
+      <div class="ai-source">📎 Nguồn: Trang khóa học — mục Bài tập 3</div>
+      <div class="ai-actions">
+        <button class="primary" onclick="showOverlay()">↗ Hỏi TA về múi giờ</button>
+      </div>`
+  },
+
+  // Slide 12 — nguồn không có
+  'slide_12': {
+    thinking: '🔍 Đang tìm "slide 12" trong tài liệu…',
+    html: `
+      <div class="ai-badge warn" style="position:relative"><span class="ann" data-n="③"></span>⚠️ Không tìm thấy "slide 12"</div>
+      <p style="position:relative"><span class="ann" data-n="④"></span>
+        Tài liệu buổi 3 <b>không có slide đánh số</b> — chỉ có các mục <b>§3.1 đến §3.5</b>. Mình không thể xác nhận nội dung "slide 12" vì nguồn đó không tồn tại trong tài liệu.</p>
+      <div class="ai-hint">
+        Nếu bạn đang hỏi về <b>độ lệch chuẩn</b>, nội dung đó nằm ở <b>§3.3</b>:<br>
+        "Độ lệch chuẩn là căn bậc hai của phương sai, có cùng đơn vị với dữ liệu."
+      </div>
+      <div class="ai-source">📎 Nguồn: Tài liệu buổi 3 — §3.3 (phương sai và độ lệch chuẩn). Không có "slide 12".</div>
+      <div class="ai-actions">
+        <button class="primary" onclick="showOverlay()">↗ Chuyển TA</button>
+      </div>`
+  },
+
+  // Fallback
+  'fallback': {
+    thinking: '🔍 Đang tìm trong tài liệu…',
+    html: `
+      <div class="ai-badge ok">💬 Trợ lý sẵn sàng</div>
+      <p>Mình có thể giúp bạn về nội dung buổi 3 — <b>Thống kê mô tả</b>: trung bình (§3.1), trung vị (§3.2), phương sai & độ lệch chuẩn (§3.3), giá trị ngoại lai (§3.4), và bài tập (§3.5).</p>
+      <p style="margin-top:8px">Bạn đang vướng phần nào? Hỏi cụ thể để mình tìm đúng mục nhé!</p>
+      <div class="ai-source">📎 Phạm vi: Tài liệu buổi 3, §3.1–§3.5</div>
+      <div class="ai-actions">
+        <button class="primary" onclick="showOverlay()">↗ Chuyển TA</button>
+      </div>`
+  }
+};
+
+/* ===== MATCHING ===== */
+function matchResponse(text) {
+  const t = text.toLowerCase();
+  // Ca #8 — Đăng FAQ: kiểm tra TRƯỚC xin_dap_so để tránh "đăng luôn lời giải bài 3" bị match nhầm
+  if (t.includes('faq') || (t.includes('đăng') && (t.includes('lời giải') || t.includes('cả lớp') || t.includes('mọi người')))) return 'dang_faq';
+  // Ca #5 — Xin đáp số bài đang mở
+  if (t.includes('đáp số') || t.includes('đáp án') || t.includes('giải hộ') || t.includes('giải bài') || (t.includes('bài 3') && (t.includes('gửi') || t.includes('cho em')))) return 'xin_dap_so';
+  if ((t.includes('trung vị') && t.includes('trung bình')) || t.includes('trung vị khác') || t.includes('trung vị vs')) return 'trung_vi';
+  if (t.includes('ví dụ') || t.includes('cho em ví dụ')) return 'vi_du';
+  if (t.includes('gợi ý thêm') || t.includes('câu (b)') || t.includes('câu b')) return 'goi_y_them';
+  if ((t.includes('hạn') && t.includes('nộp')) || t.includes('deadline') || t.includes('khi nào')) return 'han_nop';
+  if (t.includes('slide')) return 'slide_12';
+  return 'fallback';
+}
+
+/* ===== CHAT ENGINE ===== */
+const chatBody = document.getElementById('chatBody');
+let busy = false;
+
+function sendFromInput() {
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if (!text || busy) return;
+  inp.value = '';
+  sendMessage(text);
+}
+
+async function sendMessage(text) {
+  if (busy) return;
+  busy = true;
+  document.getElementById('btnSend').disabled = true;
+
+  // 1. Show user message
+  addMsg('user', text);
+
+  // 2. Find response
+  const key = matchResponse(text);
+  const resp = RESPONSES[key];
+
+  // 3. Show typing indicator
+  const typingEl = addTyping();
+  await wait(600);
+
+  // 4. Replace with thinking
+  typingEl.remove();
+  const thinkEl = addMsg('thinking', resp.thinking);
+  await wait(1000);
+
+  // 5. Replace thinking with AI response
+  thinkEl.remove();
+  addAI(resp.html);
+
+  busy = false;
+  document.getElementById('btnSend').disabled = false;
+  document.getElementById('chatInput').focus();
+}
+
+function addMsg(type, text) {
+  const div = document.createElement('div');
+  if (type === 'user') {
+    div.className = 'msg msg-user';
+    div.textContent = text;
+  } else if (type === 'thinking') {
+    div.className = 'msg';
+    div.innerHTML = '<span style="color:var(--gray);font-style:italic;font-size:13px">' + text + '</span>';
+  }
+  chatBody.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return div;
+}
+
+function addAI(html) {
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai';
+  div.innerHTML = html;
+  chatBody.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return div;
+}
+
+function addTyping() {
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chatBody.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return div;
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function reEnable() {
+  document.getElementById('chatInput').focus();
+}
+
+/* ===== VIEW SWITCHING ===== */
+function switchView(view) {
+  const btns = document.querySelectorAll('.view-tabs button');
+  btns.forEach(b => b.classList.remove('active'));
+  if (view === 'ta') {
+    btns[1].classList.add('active');
+    document.getElementById('studentView').style.display = 'none';
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('taView').classList.add('active');
+    document.querySelector('.chips').style.display = 'none';
+    document.querySelector('.input-bar').style.display = 'none';
+  } else {
+    btns[0].classList.add('active');
+    document.getElementById('studentView').style.display = 'flex';
+    document.getElementById('sidebar').style.display = 'block';
+    document.getElementById('taView').classList.remove('active');
+    document.querySelector('.chips').style.display = 'flex';
+    document.querySelector('.input-bar').style.display = 'flex';
+  }
+}
+
+/* ===== ANNOTATIONS ===== */
+function toggleAnnotations() {
+  document.body.classList.toggle('show-ann');
+  document.querySelector('.btn-annot').classList.toggle('on');
+}
+
+/* ===== OVERLAY ===== */
+function showOverlay() { document.getElementById('overlayTA').style.display = 'flex'; }
+function closeOverlay() { document.getElementById('overlayTA').style.display = 'none'; }
+function confirmTransfer() {
+  closeOverlay();
+  addAI(`
+    <div class="ai-badge ok">✓ Đã chuyển câu hỏi cho TA</div>
+    <p>Câu hỏi của bạn đã được chuyển cho TA kèm ngữ cảnh cuộc trò chuyện.</p>
+    <p style="margin-top:8px;padding:8px 12px;background:var(--yellow-light);border-radius:6px;font-size:13px">
+      ⏰ Hiện ngoài giờ TA (08:00–22:00). Phản hồi dự kiến từ <b>08:00 ngày mai</b>.
+    </p>
+    <p style="margin-top:8px;font-size:13px;color:var(--gray)">Bạn vẫn có thể tiếp tục hỏi mình về những phần khác trong tài liệu.</p>
+  `);
+}
+
+/* ===== RESET ===== */
+function resetChat() {
+  chatBody.innerHTML = `
+    <div class="msg msg-system" style="position:relative">
+      <span class="ann" data-n="①"></span>
+      ⚠️ Bài tập 3 đang mở — Trợ lý chỉ gợi ý bước đầu, không đưa đáp số
+    </div>
+    <div class="msg msg-ai">
+      Chào bạn! Mình là trợ lý học bài của khóa <b>Nhập môn Phân tích Dữ liệu</b>. Bạn đang học buổi 3 — Thống kê mô tả. Hỏi mình bất cứ điều gì về bài học nhé! 😊
+    </div>`;
+  busy = false;
+  document.getElementById('btnSend').disabled = false;
+  document.getElementById('chatInput').value = '';
+  switchView('student');
+}
+</script>
+</body>
+</html>
